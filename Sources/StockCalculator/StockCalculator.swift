@@ -1,7 +1,9 @@
 public class StockCalculator {
+    
     /// Total shares per Lot, default = 100
     public var sharesPerLot: Double = 100
     
+    /// This method is used to create StockCalculator instance.
     public init() {}
     
     /// A method for calculate Trading Return
