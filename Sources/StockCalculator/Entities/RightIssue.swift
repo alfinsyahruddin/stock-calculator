@@ -12,12 +12,12 @@ public struct RightIssue: Equatable {
     let valueAfterExDate: Double
     let rightLot: Double
     
-    let redeem: RedeemHMETD
-    let notRedeem: NotRedeemHMETD
+    let redeem: Redeem
+    let notRedeem: NotRedeem
     
-    public struct RedeemHMETD: Equatable {
+    public struct Redeem: Equatable {
         let lot: Double
-        let avgPrice: Double
+        let averagePrice: Double
         let redeemValue: Double
         let marketValue: Double
         let tradingReturn: Double
@@ -27,9 +27,9 @@ public struct RightIssue: Equatable {
         let netTradingReturnPercentage: Double
     }
     
-    public struct NotRedeemHMETD: Equatable {
+    public struct NotRedeem: Equatable {
         let lot: Double
-        let avgPrice: Double
+        let averagePrice: Double
         let rightPrice: Double
         let rightLot: Double
         let rightValue: Double

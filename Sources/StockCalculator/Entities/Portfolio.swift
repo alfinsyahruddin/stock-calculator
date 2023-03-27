@@ -9,6 +9,6 @@ import Foundation
 
 public struct Portfolio: Equatable {
     public var lot: Double
-    public var avgPrice: Double
+    public var averagePrice: Double
     public var value: Double
 }

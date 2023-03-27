@@ -303,6 +303,25 @@ final class StockCalculatorTests: XCTestCase {
     }
     
     
+    
+    func test_calculateAveragePrice() throws {
+        let actual = sut.calculateAveragePrice(
+            transactions: [
+                Transaction(price: 1000, lot: 100, value: 10_000_000),
+                Transaction(price: 500, lot: 100, value: 5_000_000)
+            ]
+        )
+        
+        let expected = Portfolio(
+            lot: 200,
+            averagePrice: 750,
+            value: 15_000_000
+        )
+        
+        XCTAssertEqual(actual, expected)
+    }
+    
+    
     func test_calculateRiskRewardRatio() throws {
         let actual = sut.calculateRiskRewardRatio(
             buyPrice: 100,
@@ -348,24 +367,7 @@ final class StockCalculatorTests: XCTestCase {
         
         XCTAssertEqual(actual, expected)
     }
-    
-    func test_calculateAveragePrice() throws {
-        let actual = sut.calculateAveragePrice(
-            transactions: [
-                Transaction(price: 1000, lot: 100, value: 10_000_000),
-                Transaction(price: 500, lot: 100, value: 5_000_000)
-            ]
-        )
-        
-        let expected = Portfolio(
-            lot: 200,
-            avgPrice: 750,
-            value: 15_000_000
-        )
-        
-        XCTAssertEqual(actual, expected)
-    }
-    
+
     
     func test_calculateRightIssue() throws {
         let actual = sut.calculateRightIssue(
@@ -382,9 +384,9 @@ final class StockCalculatorTests: XCTestCase {
             value: 80_000_000,
             valueAfterExDate: 67_500_000,
             rightLot: 300,
-            redeem: RightIssue.RedeemHMETD(
+            redeem: RightIssue.Redeem(
                 lot: 1300,
-                avgPrice: 576.9,
+                averagePrice: 576.9,
                 redeemValue: 7_500_000,
                 marketValue: 87_750_000,
                 tradingReturn: 12_753_000,
@@ -393,9 +395,9 @@ final class StockCalculatorTests: XCTestCase {
                 netTradingReturn: 250_000,
                 netTradingReturnPercentage: 0.28
             ),
-            notRedeem: RightIssue.NotRedeemHMETD(
+            notRedeem: RightIssue.NotRedeem(
                 lot: 1000,
-                avgPrice: 675,
+                averagePrice: 675,
                 rightPrice: 425,
                 rightLot: 300,
                 rightValue: 12_750_000,

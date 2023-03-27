@@ -175,14 +175,14 @@ public class StockCalculator {
     ) -> Portfolio {
         var portfolio = Portfolio(
             lot: 0,
-            avgPrice: 0,
+            averagePrice: 0,
             value: 0
         )
         
         transactions.forEach { transaction in
             portfolio.lot += transaction.lot
             portfolio.value += transaction.price * (transaction.lot * self.sharesPerLot)
-            portfolio.avgPrice = (portfolio.value / portfolio.lot) / self.sharesPerLot
+            portfolio.averagePrice = (portfolio.value / portfolio.lot) / self.sharesPerLot
         }
         
         
@@ -204,9 +204,9 @@ public class StockCalculator {
             value: 0,
             valueAfterExDate: 0,
             rightLot: 0,
-            redeem: RightIssue.RedeemHMETD(
+            redeem: RightIssue.Redeem(
                 lot: 0,
-                avgPrice: 0,
+                averagePrice: 0,
                 redeemValue: 0,
                 marketValue: 0,
                 tradingReturn: 0,
@@ -215,9 +215,9 @@ public class StockCalculator {
                 netTradingReturn: 0,
                 netTradingReturnPercentage: 0
             ),
-            notRedeem: RightIssue.NotRedeemHMETD(
+            notRedeem: RightIssue.NotRedeem(
                 lot: 0,
-                avgPrice: 0,
+                averagePrice: 0,
                 rightPrice: 0,
                 rightLot: 0,
                 rightValue: 0,
