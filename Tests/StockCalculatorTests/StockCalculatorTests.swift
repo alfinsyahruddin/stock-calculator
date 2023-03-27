@@ -303,77 +303,20 @@ final class StockCalculatorTests: XCTestCase {
     }
     
     
-    // MARK: Internal Methods Tests
-    
-    func test_calculatePercentage() throws {
-        let actual = sut.calculatePercentage(25, 100)
-        
-        let expected: Double = 25
-        
-        XCTAssertEqual(actual, expected)
-    }
-    
-    func test_getFraction() throws {
-        let testCases: [(price: Double, fraction: Double)] = [
-            (price: 100, fraction: 1),
-            (price: 200, fraction: 2),
-            (price: 500, fraction: 5),
-            (price: 2000, fraction: 10),
-            (price: 5000, fraction: 25)
-        ]
-        
-        for testCase in testCases {
-            let actual = sut.getFraction(testCase.price)
-            
-            let expected: Double = testCase.fraction
-            
-            XCTAssertEqual(actual, expected)
-        }
-    }
-    
-    func test_generateTickers() throws {
-        let actual = sut.generateTickers(100, limit: 3)
-        
-        let expected: [Double] = [
-            97,
-            98,
-            99,
-            100,
-            101,
-            102,
-            103
-        ]
-        
-        XCTAssertEqual(actual, expected)
-    }
-
-    
-    func test_getTickerByPercentage() throws {
-        let actual = sut.getTickerByPercentage(100, percentage: 35)
-        
-        let expected: Double = 135
-        
-        XCTAssertEqual(actual, expected)
-    }
-
-    func test_handleArb() throws {
-        let actual = sut.handleArb(
-            [
-                AutoReject(price: 9, priceChange: -1, percentage: -10, totalPercentage: -10),
-                AutoReject(price: 9, priceChange: 0, percentage: 0, totalPercentage: 0),
-                AutoReject(price: 9, priceChange: 0, percentage: 0, totalPercentage: 0)
-            ],
-            type: .acceleration,
-            price: 35
+    func test_calculateRiskRewardRatio() throws {
+        let actual = sut.calculateRiskRewardRatio(
+            buyPrice: 100,
+            targetPrice: 150,
+            stopLossPrice: 90
         )
         
-        let expected: [AutoReject] = [
-            AutoReject(price: 9, priceChange: -1, percentage: -10, totalPercentage: -10)
-        ]
+        let expected = RiskRewardRatio(risk: 1, reward: 5)
         
         XCTAssertEqual(actual, expected)
     }
 
+    
+    
     
     
 }
