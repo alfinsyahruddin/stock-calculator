@@ -367,5 +367,51 @@ final class StockCalculatorTests: XCTestCase {
     }
     
     
+    func test_calculateRightIssue() throws {
+        let actual = sut.calculateRightIssue(
+            ticker: "BBHI",
+            cumDatePrice: 800,
+            lot: 1000,
+            exercisePrice: 250,
+            oldRatio: 1000,
+            newRatio: 300,
+            currentPrice: 675
+        )
+        
+        let expected = RightIssue(
+            value: 80_000_000,
+            valueAfterExDate: 67_500_000,
+            rightLot: 300,
+            redeem: RightIssue.RedeemHMETD(
+                lot: 1300,
+                avgPrice: 576.9,
+                redeemValue: 7_500_000,
+                marketValue: 87_750_000,
+                tradingReturn: 12_753_000,
+                tradingReturnPercentage: 14.53,
+                totalModal: 87_500_000,
+                netTradingReturn: 250_000,
+                netTradingReturnPercentage: 0.28
+            ),
+            notRedeem: RightIssue.NotRedeemHMETD(
+                lot: 1000,
+                avgPrice: 675,
+                rightPrice: 425,
+                rightLot: 300,
+                rightValue: 12_750_000,
+                marketValue: 67_500_000,
+                tradingReturn: 0,
+                tradingReturnPercentage: 0,
+                totalModal: 80_000_000,
+                netTradingReturn: 250_000,
+                netTradingReturnPercentage: 0.31
+            )
+        )
+        
+        
+        XCTAssertEqual(actual, expected)
+    }
+    
+   
 }
 

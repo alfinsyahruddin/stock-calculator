@@ -188,6 +188,50 @@ public class StockCalculator {
         
         return portfolio
     }
+    
+    /// A method for calculate Right Issue
+    public func calculateRightIssue(
+        ticker: String,
+        cumDatePrice: Double,
+        lot: Double,
+        exercisePrice: Double,
+        oldRatio: Double,
+        newRatio: Double,
+        currentPrice: Double
+    ) -> RightIssue {
+        
+        let rightIssue = RightIssue(
+            value: 0,
+            valueAfterExDate: 0,
+            rightLot: 0,
+            redeem: RightIssue.RedeemHMETD(
+                lot: 0,
+                avgPrice: 0,
+                redeemValue: 0,
+                marketValue: 0,
+                tradingReturn: 0,
+                tradingReturnPercentage: 0,
+                totalModal: 0,
+                netTradingReturn: 0,
+                netTradingReturnPercentage: 0
+            ),
+            notRedeem: RightIssue.NotRedeemHMETD(
+                lot: 0,
+                avgPrice: 0,
+                rightPrice: 0,
+                rightLot: 0,
+                rightValue: 0,
+                marketValue: 0,
+                tradingReturn: 0,
+                tradingReturnPercentage: 0,
+                totalModal: 0,
+                netTradingReturn: 0,
+                netTradingReturnPercentage: 0
+            )
+        )
+        
+        return rightIssue
+    }
 }
 
 
