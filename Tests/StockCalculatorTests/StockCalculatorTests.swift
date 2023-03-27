@@ -314,9 +314,57 @@ final class StockCalculatorTests: XCTestCase {
         
         XCTAssertEqual(actual, expected)
     }
-
     
+    func test_calculatePriceBookValue() throws {
+        let actual = sut.calculatePriceBookValue(
+            price: 50,
+            bookValue: 200
+        )
+        
+        let expected = 0.25
+        
+        XCTAssertEqual(actual, expected)
+    }
     
+    func test_calculateDividenYield() throws {
+        let actual = sut.calculateDividenYield(
+            price: 100,
+            dividen: 25
+        )
+        
+        let expected = 25.0
+        
+        XCTAssertEqual(actual, expected)
+    }
+    
+    func test_calculateStockSplit() throws {
+        let actual = sut.calculateStockSplit(
+            price: 1000,
+            oldRatio: 100,
+            newRatio: 20
+        )
+        
+        let expected = 200.0
+        
+        XCTAssertEqual(actual, expected)
+    }
+    
+    func test_calculateAveragePrice() throws {
+        let actual = sut.calculateAveragePrice(
+            transactions: [
+                Transaction(price: 1000, lot: 100, value: 10_000_000),
+                Transaction(price: 500, lot: 100, value: 5_000_000)
+            ]
+        )
+        
+        let expected = Portfolio(
+            lot: 200,
+            avgPrice: 750,
+            value: 15_000_000
+        )
+        
+        XCTAssertEqual(actual, expected)
+    }
     
     
 }
