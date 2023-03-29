@@ -197,36 +197,62 @@ public class StockCalculator {
         exercisePrice: Double,
         oldRatio: Double,
         newRatio: Double,
-        currentPrice: Double
+        currentPrice: Double? = nil
     ) -> RightIssue {
         
+        let value = cumDatePrice * (lot * self.sharesPerLot)
+        let rightLot = lot * (newRatio / oldRatio)
+        let theoreticalPrice = self.roundedPrice(
+            ((oldRatio * cumDatePrice) +
+             (newRatio * exercisePrice)) /
+            (oldRatio + newRatio)
+        )
+        
+        let currentPrice = currentPrice ?? theoreticalPrice
+        
+        let redeemLot = lot + rightLot
+        let redeemAveragePrice = (
+            ((theoreticalPrice * (lot * self.sharesPerLot)) +
+             (exercisePrice * (rightLot * self.sharesPerLot))) /
+            (redeemLot * self.sharesPerLot)).round()
+        let redeemCost = exercisePrice * (rightLot * self.sharesPerLot)
+        let redeemTotalModal = value + redeemCost
+        let redeemMarketValue = currentPrice * (redeemLot * self.sharesPerLot)
+        
+        let notRedeemMarketValue = theoreticalPrice * (lot * self.sharesPerLot)
+        let notRedeemRightPrice = currentPrice - exercisePrice
+        let notRedeemRightValue = notRedeemRightPrice * (rightLot * self.sharesPerLot)
+        let notRedeemTotalEquity = notRedeemMarketValue + notRedeemRightValue
+        let notRedeemTotalModal = value
+
         let rightIssue = RightIssue(
-            value: 0,
-            valueAfterExDate: 0,
-            rightLot: 0,
+            value: value,
+            valueAfterExDate: theoreticalPrice * (lot * self.sharesPerLot),
+            rightLot: rightLot,
+            theoreticalPrice: theoreticalPrice,
             redeem: RightIssue.Redeem(
-                lot: 0,
-                averagePrice: 0,
-                redeemValue: 0,
-                marketValue: 0,
-                tradingReturn: 0,
-                tradingReturnPercentage: 0,
-                totalModal: 0,
-                netTradingReturn: 0,
-                netTradingReturnPercentage: 0
+                lot: redeemLot,
+                averagePrice: redeemAveragePrice,
+                redeemCost: redeemCost,
+                marketValue: redeemMarketValue,
+                tradingReturn: ((currentPrice - redeemAveragePrice) * (redeemLot * self.sharesPerLot)).round(),
+                tradingReturnPercentage: (((currentPrice - redeemAveragePrice) / currentPrice) * 100).round(),
+                totalModal: redeemTotalModal,
+                netTradingReturn: redeemMarketValue - redeemTotalModal,
+                netTradingReturnPercentage: (((redeemMarketValue - redeemTotalModal) / redeemMarketValue) * 100).round()
             ),
             notRedeem: RightIssue.NotRedeem(
-                lot: 0,
-                averagePrice: 0,
-                rightPrice: 0,
-                rightLot: 0,
-                rightValue: 0,
-                marketValue: 0,
-                tradingReturn: 0,
-                tradingReturnPercentage: 0,
-                totalModal: 0,
-                netTradingReturn: 0,
-                netTradingReturnPercentage: 0
+                lot: lot,
+                averagePrice: theoreticalPrice,
+                rightPrice: notRedeemRightPrice,
+                rightLot: rightLot,
+                rightValue: notRedeemRightValue,
+                marketValue: notRedeemMarketValue,
+                tradingReturn: (currentPrice - theoreticalPrice) * (lot * self.sharesPerLot),
+                tradingReturnPercentage: (((currentPrice - theoreticalPrice) / currentPrice) * 100).round(),
+                totalModal: notRedeemTotalModal,
+                netTradingReturn: notRedeemTotalEquity - notRedeemTotalModal,
+                netTradingReturnPercentage: (((notRedeemTotalEquity - notRedeemTotalModal) / notRedeemTotalEquity) * 100).round()
             )
         )
         

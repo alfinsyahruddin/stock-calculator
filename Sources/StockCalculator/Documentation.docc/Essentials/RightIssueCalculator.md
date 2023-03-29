@@ -10,13 +10,12 @@ In this article, we will learn how to calculate Right Issue using ``StockCalcula
 let stockCalculator = StockCalculator()
 
 let rightIssue = stockCalculator.calculateRightIssue(
-    ticker: "BBHI",
+    ticker: "GLSM",
     cumDatePrice: 800,
     lot: 1000,
     exercisePrice: 250,
     oldRatio: 1000,
-    newRatio: 300,
-    currentPrice: 675
+    newRatio: 300
 )
 ```
 
@@ -27,12 +26,13 @@ RightIssue(
     value: 80_000_000,
     valueAfterExDate: 67_500_000,
     rightLot: 300,
+    theoreticalPrice: 675,
     redeem: RightIssue.Redeem(
         lot: 1300,
-        averagePrice: 576.9,
-        redeemValue: 7_500_000,
+        averagePrice: 576.92,
+        redeemCost: 7_500_000,
         marketValue: 87_750_000,
-        tradingReturn: 12_753_000,
+        tradingReturn: 12_750_400,
         tradingReturnPercentage: 14.53,
         totalModal: 87_500_000,
         netTradingReturn: 250_000,

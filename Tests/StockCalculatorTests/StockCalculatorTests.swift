@@ -369,9 +369,9 @@ final class StockCalculatorTests: XCTestCase {
     }
 
     
-    func test_calculateRightIssue() throws {
+    func test_calculateRightIssue_GLSM() throws {
         let actual = sut.calculateRightIssue(
-            ticker: "BBHI",
+            ticker: "GLSM",
             cumDatePrice: 800,
             lot: 1000,
             exercisePrice: 250,
@@ -384,12 +384,13 @@ final class StockCalculatorTests: XCTestCase {
             value: 80_000_000,
             valueAfterExDate: 67_500_000,
             rightLot: 300,
+            theoreticalPrice: 675,
             redeem: RightIssue.Redeem(
                 lot: 1300,
-                averagePrice: 576.9,
-                redeemValue: 7_500_000,
+                averagePrice: 576.92,
+                redeemCost: 7_500_000,
                 marketValue: 87_750_000,
-                tradingReturn: 12_753_000,
+                tradingReturn: 12_750_400,
                 tradingReturnPercentage: 14.53,
                 totalModal: 87_500_000,
                 netTradingReturn: 250_000,
@@ -415,5 +416,51 @@ final class StockCalculatorTests: XCTestCase {
     }
     
    
+    func test_calculateRightIssue_BBRI() throws {
+        let actual = sut.calculateRightIssue(
+            ticker: "BBRI",
+            cumDatePrice: 800,
+            lot: 1000,
+            exercisePrice: 250,
+            oldRatio: 1000,
+            newRatio: 300
+        )
+        
+        let expected = RightIssue(
+            value: 80_000_000,
+            valueAfterExDate: 67_500_000,
+            rightLot: 300,
+            theoreticalPrice: 675,
+            redeem: RightIssue.Redeem(
+                lot: 1300,
+                averagePrice: 576.92,
+                redeemCost: 7_500_000,
+                marketValue: 87_750_000,
+                tradingReturn: 12_750_400,
+                tradingReturnPercentage: 14.53,
+                totalModal: 87_500_000,
+                netTradingReturn: 250_000,
+                netTradingReturnPercentage: 0.28
+            ),
+            notRedeem: RightIssue.NotRedeem(
+                lot: 1000,
+                averagePrice: 675,
+                rightPrice: 425,
+                rightLot: 300,
+                rightValue: 12_750_000,
+                marketValue: 67_500_000,
+                tradingReturn: 0,
+                tradingReturnPercentage: 0,
+                totalModal: 80_000_000,
+                netTradingReturn: 250_000,
+                netTradingReturnPercentage: 0.31
+            )
+        )
+        
+        
+        XCTAssertEqual(actual, expected)
+    }
+    
+    
 }
 

@@ -57,8 +57,6 @@ internal extension StockCalculator {
         
         
         if price.truncatingRemainder(dividingBy: self.getFraction(price)) == 0 {
-            print("kena")
-            
             return price
         }
         
@@ -119,5 +117,21 @@ internal extension StockCalculator {
     
     func gcd(_ a: Double, _ b: Double) -> Double {
         return (b == 0) ? a : gcd(b, a.truncatingRemainder(dividingBy: b))
+    }
+    
+    func roundedPrice(_ price: Double) -> Double {
+        var roundedPrice: Double = 0
+        
+        while roundedPrice + self.getFraction(roundedPrice) < price {
+            roundedPrice += self.getFraction(roundedPrice)
+        }
+        
+        let diff = price.truncatingRemainder(dividingBy: roundedPrice)
+        
+        if diff > self.getFraction(roundedPrice) / 2 {
+            roundedPrice += self.getFraction(roundedPrice)
+        }
+        
+        return roundedPrice
     }
 }

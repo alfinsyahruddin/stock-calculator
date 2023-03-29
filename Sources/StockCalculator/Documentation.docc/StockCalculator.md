@@ -20,4 +20,5 @@ Swift package for Stock Calculation on Indonesia Stock Exchange (IDX).
 - <doc:PriceBookValueCalculator>
 - <doc:DividenYieldCalculator>
 - <doc:StockSplitCalculator>
+- <doc:RightIssueCalculator>
 

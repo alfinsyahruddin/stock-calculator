@@ -105,6 +105,23 @@ final class StockCalculatorInternalTests: XCTestCase {
         XCTAssertEqual(actual, expected)
     }
     
+    func test_roundedPrice() throws {
+        let testCases: [(price: Double, roundedPrice: Double)] = [
+//            (price: 673, roundedPrice: 675),
+//            (price: 4548, roundedPrice: 4550),
+//            (price: 201.5, roundedPrice: 202),
+            (price: 200.5, roundedPrice: 200)
+        ]
+        
+        for testCase in testCases {
+            let actual = sut.roundedPrice(testCase.price)
+            
+            let expected = testCase.roundedPrice
+            
+            XCTAssertEqual(actual, expected)
+        }
+    }
+    
     
     
 }
