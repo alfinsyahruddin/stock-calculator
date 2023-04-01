@@ -8,37 +8,37 @@
 import Foundation
 
 public struct RightIssue: Equatable {
-    let value: Double
-    let valueAfterExDate: Double
-    let rightLot: Double
-    let theoreticalPrice: Double
+    public let value: Double
+    public let valueAfterExDate: Double
+    public let rightLot: Double
+    public let theoreticalPrice: Double
     
-    let redeem: Redeem
-    let notRedeem: NotRedeem
+    public let redeem: Redeem
+    public let notRedeem: NotRedeem
     
     public struct Redeem: Equatable {
-        let lot: Double
-        let averagePrice: Double
-        let redeemCost: Double
-        let marketValue: Double
-        let tradingReturn: Double
-        let tradingReturnPercentage: Double
-        let totalModal: Double
-        let netTradingReturn: Double
-        let netTradingReturnPercentage: Double
+        public let lot: Double
+        public let averagePrice: Double
+        public let redeemCost: Double
+        public let marketValue: Double
+        public let tradingReturn: Double
+        public let tradingReturnPercentage: Double
+        public let totalModal: Double
+        public let netTradingReturn: Double
+        public let netTradingReturnPercentage: Double
     }
     
     public struct NotRedeem: Equatable {
-        let lot: Double
-        let averagePrice: Double
-        let rightPrice: Double
-        let rightLot: Double
-        let rightValue: Double
-        let marketValue: Double
-        let tradingReturn: Double
-        let tradingReturnPercentage: Double
-        let totalModal: Double
-        let netTradingReturn: Double
-        let netTradingReturnPercentage: Double
+        public let lot: Double
+        public let averagePrice: Double
+        public let rightPrice: Double
+        public let rightLot: Double
+        public let rightValue: Double
+        public let marketValue: Double
+        public let tradingReturn: Double
+        public let tradingReturnPercentage: Double
+        public let totalModal: Double
+        public let netTradingReturn: Double
+        public let netTradingReturnPercentage: Double
     }
 }
