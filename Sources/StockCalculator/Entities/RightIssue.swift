@@ -8,6 +8,7 @@
 import Foundation
 
 public struct RightIssue: Equatable {
+    public let ticker: String
     public let value: Double
     public let valueAfterExDate: Double
     public let rightLot: Double

@@ -381,6 +381,7 @@ final class StockCalculatorTests: XCTestCase {
         )
         
         let expected = RightIssue(
+            ticker: "GLSM",
             value: 80_000_000,
             valueAfterExDate: 67_500_000,
             rightLot: 300,
@@ -427,6 +428,7 @@ final class StockCalculatorTests: XCTestCase {
         )
         
         let expected = RightIssue(
+            ticker: "BBRI",
             value: 80_000_000,
             valueAfterExDate: 67_500_000,
             rightLot: 300,

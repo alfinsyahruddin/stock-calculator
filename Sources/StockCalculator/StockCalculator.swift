@@ -226,6 +226,7 @@ public class StockCalculator {
         let notRedeemTotalModal = value
 
         let rightIssue = RightIssue(
+            ticker: ticker,
             value: value,
             valueAfterExDate: theoreticalPrice * (lot * self.sharesPerLot),
             rightLot: rightLot,
