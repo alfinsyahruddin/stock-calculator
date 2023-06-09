@@ -26,7 +26,7 @@ public extension AutoRejectType {
         case .symmetric:
             return (ara: limit, arb: -limit)
         case .asymmetric:
-            return (ara: limit, arb: -7)
+            return (ara: limit, arb: -15)
         case .acceleration:
             return (ara: 10, arb: -10)
         }
