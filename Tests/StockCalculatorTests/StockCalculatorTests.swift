@@ -417,6 +417,28 @@ final class StockCalculatorTests: XCTestCase {
         XCTAssertEqual(actual, expected)
     }
     
+    func test_calculateLot() throws {
+        let actual = sut.calculateLot(
+            price: 1000,
+            maxBuy: 10_000_000
+        )
+        
+        let expected = LotResult(lot: 100, value: 10_000_000)
+        
+        XCTAssertEqual(actual, expected)
+    }
+    
+    
+    func test_calculateLot_rounded() throws {
+        let actual = sut.calculateLot(
+            price: 1650,
+            maxBuy: 15_000_000
+        )
+        
+        let expected = LotResult(lot: 90, value: 14_850_000)
+        
+        XCTAssertEqual(actual, expected)
+    }
     
 }
 

@@ -259,6 +259,22 @@ public class StockCalculator {
         
         return rightIssue
     }
+    
+    /// A method for calculate lot by max buy
+    public func calculateLot(
+        price: Double,
+        maxBuy: Double
+    ) -> LotResult {
+        guard price > 0, maxBuy > 0 else {
+            return LotResult(lot: 0, value: 0)
+        }
+        
+        let totalShares = (maxBuy / price).rounded(.down)
+        let lot = (totalShares / sharesPerLot).rounded(.down)
+        let value = price * lot * sharesPerLot
+        
+        return LotResult(lot: lot, value: value)
+    }
 }
 
 
