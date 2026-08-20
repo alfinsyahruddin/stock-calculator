@@ -92,14 +92,14 @@ final class StockCalculatorInternalTests: XCTestCase {
     func test_handleArb_asymmetric() throws {
         let actual = sut.handleArb(
             [
-                AutoReject(price: 45, priceChange: -7, percentage: -7, totalPercentage: -14),
+                AutoReject(price: 0, priceChange: -2, percentage: -100, totalPercentage: -100),
             ],
             type: .asymmetric,
-            price: 52
+            price: 2
         )
         
         let expected: [AutoReject] = [
-            AutoReject(price: 50, priceChange: -2, percentage: -3.85, totalPercentage: -3.85),
+            AutoReject(price: 1, priceChange: -1, percentage: -50, totalPercentage: -50),
         ]
         
         XCTAssertEqual(actual, expected)
@@ -124,5 +124,32 @@ final class StockCalculatorInternalTests: XCTestCase {
     
     
     
+    func test_autoRejectType_arbPrice() throws {
+        XCTAssertEqual(AutoRejectType.symmetric.arbPrice, 1)
+        XCTAssertEqual(AutoRejectType.asymmetric.arbPrice, 1)
+        XCTAssertEqual(AutoRejectType.acceleration.arbPrice, 0)
+    }
+    
+    func test_autoRejectType_getPercentage() throws {
+        // Price < 200 (including 1)
+        XCTAssertEqual(AutoRejectType.symmetric.getPercentage(price: 1).ara, 35)
+        XCTAssertEqual(AutoRejectType.symmetric.getPercentage(price: 1).arb, -35)
+        XCTAssertEqual(AutoRejectType.symmetric.getPercentage(price: 50).ara, 35)
+        XCTAssertEqual(AutoRejectType.symmetric.getPercentage(price: 199).ara, 35)
+        
+        // Price 200..<5000
+        XCTAssertEqual(AutoRejectType.symmetric.getPercentage(price: 200).ara, 25)
+        XCTAssertEqual(AutoRejectType.symmetric.getPercentage(price: 4999).ara, 25)
+        
+        // Price >= 5000
+        XCTAssertEqual(AutoRejectType.symmetric.getPercentage(price: 5000).ara, 20)
+        
+        // Asymmetric
+        XCTAssertEqual(AutoRejectType.asymmetric.getPercentage(price: 1).arb, -15)
+        
+        // Acceleration
+        XCTAssertEqual(AutoRejectType.acceleration.getPercentage(price: 1).ara, 10)
+        XCTAssertEqual(AutoRejectType.acceleration.getPercentage(price: 1).arb, -10)
+    }
 }
 

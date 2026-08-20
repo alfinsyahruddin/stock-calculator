@@ -12,7 +12,7 @@ public extension AutoRejectType {
         var limit: Double
         
         switch price {
-        case 50..<200:
+        case 1..<200:
             limit = 35
             break
         case 200..<5000:
@@ -35,9 +35,9 @@ public extension AutoRejectType {
     var arbPrice: Double {
         switch self {
         case .symmetric:
-            return 50
+            return 1
         case .asymmetric:
-            return 50
+            return 1
         case .acceleration:
             return 0
         }

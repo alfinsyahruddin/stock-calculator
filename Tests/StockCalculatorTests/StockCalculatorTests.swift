@@ -123,7 +123,7 @@ final class StockCalculatorTests: XCTestCase {
             ],
             arb: [
                 AutoReject(price: 65, priceChange: -35, percentage: -35, totalPercentage: -35),
-                AutoReject(price: 50, priceChange: -15, percentage: -23.08, totalPercentage: -50)
+                AutoReject(price: 43, priceChange: -22, percentage: -33.85, totalPercentage: -57)
             ]
         )
         
@@ -162,11 +162,12 @@ final class StockCalculatorTests: XCTestCase {
         
         let expected = AutoRejects(
             ara: [
-                AutoReject(price: 48, priceChange: 8, percentage: 20, totalPercentage: 20),
-                AutoReject(price: 57, priceChange: 9, percentage: 18.75, totalPercentage: 42.50)
+                AutoReject(price: 54, priceChange: 14, percentage: 35, totalPercentage: 35),
+                AutoReject(price: 72, priceChange: 18, percentage: 33.33, totalPercentage: 80)
             ],
             arb: [
-
+                AutoReject(price: 26, priceChange: -14, percentage: -35, totalPercentage: -35),
+                AutoReject(price: 17, priceChange: -9, percentage: -34.62, totalPercentage: -57.5)
             ]
         )
         
@@ -440,5 +441,25 @@ final class StockCalculatorTests: XCTestCase {
         XCTAssertEqual(actual, expected)
     }
     
+    func test_calculateAutoRejects_minPriceFloor() throws {
+        let actual = sut.calculateAutoRejects(
+            price: 3,
+            type: .symmetric,
+            limit: 3
+        )
+        
+        let expected = AutoRejects(
+            ara: [
+                AutoReject(price: 4, priceChange: 1, percentage: 33.33, totalPercentage: 33.33),
+                AutoReject(price: 5, priceChange: 1, percentage: 25, totalPercentage: 66.67),
+                AutoReject(price: 6, priceChange: 1, percentage: 20, totalPercentage: 100)
+            ],
+            arb: [
+                AutoReject(price: 2, priceChange: -1, percentage: -33.33, totalPercentage: -33.33)
+            ]
+        )
+        
+        XCTAssertEqual(actual, expected)
+    }
 }
 
