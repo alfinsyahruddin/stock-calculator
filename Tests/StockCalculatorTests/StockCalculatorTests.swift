@@ -461,5 +461,74 @@ final class StockCalculatorTests: XCTestCase {
         
         XCTAssertEqual(actual, expected)
     }
+    func test_calculateAutoRejects_customPercentages() {
+        let result = sut.calculateAutoRejects(
+            price: 1000, type: .symmetric, limit: 2,
+            araPercentage: 10, arbPercentage: 5
+        )
+        XCTAssertEqual(result, AutoRejects(
+            ara: [
+                AutoReject(price: 1100, priceChange: 100, percentage: 10, totalPercentage: 10),
+                AutoReject(price: 1210, priceChange: 110, percentage: 10, totalPercentage: 21)
+            ],
+            arb: [
+                AutoReject(price: 950, priceChange: -50, percentage: -5, totalPercentage: -5),
+                AutoReject(price: 905, priceChange: -45, percentage: -4.74, totalPercentage: -9.5)
+            ]
+        ))
+    }
+
+    func test_calculateAutoRejects_independentOverrides() {
+        let defaults = sut.calculateAutoRejects(price: 150, type: .symmetric, limit: 2)
+        let customAra = sut.calculateAutoRejects(
+            price: 150, type: .symmetric, limit: 2, araPercentage: 10
+        )
+        let customArb = sut.calculateAutoRejects(
+            price: 150, type: .symmetric, limit: 2, arbPercentage: 10
+        )
+        XCTAssertEqual(customAra.ara.map(\.price), [165, 181])
+        XCTAssertEqual(customAra.arb, defaults.arb)
+        XCTAssertEqual(customArb.ara, defaults.ara)
+        XCTAssertEqual(customArb.arb.map(\.price), [135, 122])
+    }
+
+    func test_calculateAutoRejects_customPercentageAcrossPriceBands() {
+        let result = sut.calculateAutoRejects(
+            price: 150, type: .asymmetric, limit: 2,
+            araPercentage: 35, arbPercentage: 12.5
+        )
+        XCTAssertEqual(result.ara.map(\.price), [202, 272])
+        XCTAssertEqual(result.arb.map(\.price), [132, 116])
+    }
+
+    func test_calculateAutoRejects_zeroPercentages() {
+        let defaults = sut.calculateAutoRejects(price: 3, type: .symmetric, limit: 2)
+        let custom = sut.calculateAutoRejects(
+            price: 3, type: .symmetric, limit: 2, arbPercentage: 0
+        )
+        XCTAssertEqual(custom.ara, defaults.ara)
+        XCTAssertTrue(custom.arb.isEmpty)
+        XCTAssertEqual(sut.calculateAutoRejects(
+            price: 3, type: .symmetric, limit: 2,
+            araPercentage: 0, arbPercentage: 0
+        ), AutoRejects(ara: [], arb: []))
+    }
+
+    func test_calculateAutoRejects_customPercentageBoundsAndFloor() {
+        for type: AutoRejectType in [.symmetric, .asymmetric, .acceleration] {
+            let result = sut.calculateAutoRejects(
+                price: 100, type: type, limit: 2,
+                araPercentage: 100, arbPercentage: 100
+            )
+            XCTAssertEqual(result.ara.map(\.price), [200, 400])
+            XCTAssertEqual(result.arb.map(\.price), [type.arbPrice])
+        }
+        for limit in [0, -1] {
+            XCTAssertEqual(sut.calculateAutoRejects(
+                price: 100, type: .symmetric, limit: limit,
+                araPercentage: 10, arbPercentage: 5
+            ), AutoRejects(ara: [], arb: []))
+        }
+    }
 }
 

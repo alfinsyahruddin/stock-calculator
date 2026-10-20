@@ -4,7 +4,7 @@ How to calculate Auto Rejections (ARA & ARB).
  
 ## Overview
 
-In this article, we will learn how to calculate Auto Rejections (ARA & ARB) using ``StockCalculator/calculateAutoRejects(price:type:limit:)`` method.
+In this article, we will learn how to calculate Auto Rejections (ARA & ARB) using ``StockCalculator/calculateAutoRejects(price:type:limit:araPercentage:arbPercentage:)`` method.
 
 ```swift
 let stockCalculator = StockCalculator()
@@ -30,3 +30,28 @@ AutoRejects(
     ]
 )
 ```
+
+## Custom percentages
+
+Set either or both percentages to override the selected type. Enter positive
+percentage points: `araPercentage: 25` means a 25% rise and `arbPercentage: 15`
+means a 15% fall. Values must be finite and in `0...100`; invalid values fail a
+precondition. A value of zero returns no movements for that side. A nonpositive
+`limit` returns empty results.
+
+```swift
+let autoRejects = stockCalculator.calculateAutoRejects(
+    price: 1000,
+    type: .symmetric,
+    limit: 2,
+    araPercentage: 10,
+    arbPercentage: 5
+)
+// ARA prices: [1100, 1210]
+// ARB prices: [950, 905]
+```
+
+Each override stays fixed across all steps, including when the price crosses a
+price band. An omitted (or `nil`) override retains the selected type's defaults.
+Tick rounding and the selected type's minimum price still apply, so the returned
+percentage may differ from the requested percentage.

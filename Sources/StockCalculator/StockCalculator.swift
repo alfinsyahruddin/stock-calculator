@@ -54,12 +54,31 @@ public class StockCalculator {
         )
     }
 
-    /// A method for calculate Auto Rejections (ARA & ARB)
+    /// Calculates Auto Rejections (ARA & ARB), with optional percentage overrides.
+    ///
+    /// - Parameters:
+    ///   - araPercentage: A percentage from 0 through 100 (25 means a 25% rise).
+    ///     When nil, uses the selected type's percentage at each price step.
+    ///   - arbPercentage: A percentage from 0 through 100 (15 means a 15% fall).
+    ///     When nil, uses the selected type's percentage at each price step.
+    /// - Precondition: Custom percentages must be finite and in 0...100.
     public func calculateAutoRejects(
         price: Double,
         type: AutoRejectType,
-        limit: Int = 5
+        limit: Int = 5,
+        araPercentage: Double? = nil,
+        arbPercentage: Double? = nil
     ) -> AutoRejects {
+        if let araPercentage = araPercentage {
+            precondition(araPercentage.isFinite && (0...100).contains(araPercentage),
+                         "ARA percentage must be finite and in 0...100")
+        }
+        if let arbPercentage = arbPercentage {
+            precondition(arbPercentage.isFinite && (0...100).contains(arbPercentage),
+                         "ARB percentage must be finite and in 0...100")
+        }
+        guard limit > 0 else { return AutoRejects(ara: [], arb: []) }
+
         var ara: [AutoReject] = []
         var arb: [AutoReject] = []
 
@@ -67,7 +86,7 @@ public class StockCalculator {
         for _ in 0..<limit {
             let lastPrice = ara.last?.price ?? price
 
-            let newPrice = self.getTickerByPercentage(lastPrice, percentage: type.getPercentage(price: lastPrice).ara)
+            let newPrice = self.getTickerByPercentage(lastPrice, percentage: araPercentage ?? type.getPercentage(price: lastPrice).ara)
             let percentage = self.calculatePercentage(newPrice - lastPrice, lastPrice)
 
             ara.append(
@@ -85,7 +104,7 @@ public class StockCalculator {
         for _ in 0..<limit {
             let lastPrice = arb.last?.price ?? price
 
-            let newPrice = self.getTickerByPercentage(lastPrice, percentage: type.getPercentage(price: lastPrice).arb)
+            let newPrice = self.getTickerByPercentage(lastPrice, percentage: arbPercentage.map { -$0 } ?? type.getPercentage(price: lastPrice).arb)
             let percentage = self.calculatePercentage(newPrice - lastPrice, lastPrice)
 
             arb.append(
@@ -102,7 +121,7 @@ public class StockCalculator {
 
         return AutoRejects(
             ara: self.handleAra(ara, type: type, price: price),
-            arb: self.handleArb(arb, type: type, price: price)
+            arb: arbPercentage == 0 ? [] : self.handleArb(arb, type: type, price: price)
         )
     }
 
