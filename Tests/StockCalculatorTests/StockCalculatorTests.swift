@@ -515,7 +515,7 @@ final class StockCalculatorTests: XCTestCase {
     }
 
     func test_calculateAutoRejects_customPercentageBoundsAndFloor() {
-        for type: AutoRejectType in [.symmetric, .asymmetric, .acceleration] {
+        for type: AutoRejectType in [.symmetric, .asymmetric, .acceleration, .idx] {
             let result = sut.calculateAutoRejects(
                 price: 100, type: type, limit: 2,
                 araPercentage: 100, arbPercentage: 100
@@ -529,6 +529,124 @@ final class StockCalculatorTests: XCTestCase {
                 araPercentage: 10, arbPercentage: 5
             ), AutoRejects(ara: [], arb: []))
         }
+    }
+
+    func test_calculateAutoRejects_idx_band1_to_10() throws {
+        // Price Rp1–10: Batas ARA dan ARB Rp1
+        let actual = sut.calculateAutoRejects(
+            price: 5,
+            type: .idx,
+            limit: 2
+        )
+        let expected = AutoRejects(
+            ara: [
+                AutoReject(price: 6, priceChange: 1, percentage: 20, totalPercentage: 20),
+                AutoReject(price: 7, priceChange: 1, percentage: 16.67, totalPercentage: 40)
+            ],
+            arb: [
+                AutoReject(price: 4, priceChange: -1, percentage: -20, totalPercentage: -20),
+                AutoReject(price: 3, priceChange: -1, percentage: -25, totalPercentage: -40)
+            ]
+        )
+        XCTAssertEqual(actual, expected)
+
+        // Floor at 1: ARB cannot fall below 1
+        let floorAt1 = sut.calculateAutoRejects(price: 1, type: .idx, limit: 2)
+        XCTAssertEqual(floorAt1.ara.map(\.price), [2, 3])
+        XCTAssertEqual(floorAt1.arb, [])
+
+        let floorAt2 = sut.calculateAutoRejects(price: 2, type: .idx, limit: 2)
+        XCTAssertEqual(floorAt2.ara.map(\.price), [3, 4])
+        XCTAssertEqual(floorAt2.arb.map(\.price), [1])
+
+        // Crossing from 10 into 11: ARA switches from Rp1 to 35%
+        let at10 = sut.calculateAutoRejects(price: 10, type: .idx, limit: 2)
+        XCTAssertEqual(at10.ara.map(\.price), [11, 14])
+        XCTAssertEqual(at10.arb.map(\.price), [9, 8])
+    }
+
+    func test_calculateAutoRejects_idx_band11_to_14() throws {
+        // Price Rp11–14: Batas ARA 35% dan ARB Rp1
+        let actual = sut.calculateAutoRejects(
+            price: 11,
+            type: .idx,
+            limit: 2
+        )
+        let expected = AutoRejects(
+            ara: [
+                AutoReject(price: 14, priceChange: 3, percentage: 27.27, totalPercentage: 27.27),
+                AutoReject(price: 18, priceChange: 4, percentage: 28.57, totalPercentage: 63.64)
+            ],
+            arb: [
+                AutoReject(price: 10, priceChange: -1, percentage: -9.09, totalPercentage: -9.09),
+                AutoReject(price: 9, priceChange: -1, percentage: -10, totalPercentage: -18.18)
+            ]
+        )
+        XCTAssertEqual(actual, expected)
+
+        let at14 = sut.calculateAutoRejects(price: 14, type: .idx, limit: 1)
+        XCTAssertEqual(at14.ara, [
+            AutoReject(price: 18, priceChange: 4, percentage: 28.57, totalPercentage: 28.57)
+        ])
+        XCTAssertEqual(at14.arb, [
+            AutoReject(price: 13, priceChange: -1, percentage: -7.14, totalPercentage: -7.14)
+        ])
+    }
+
+    func test_calculateAutoRejects_idx_band15_to_200() throws {
+        // Price Rp15–Rp200: Batas ARA 35% dan ARB 7%
+        let at15 = sut.calculateAutoRejects(price: 15, type: .idx, limit: 2)
+        XCTAssertEqual(at15.ara.map(\.price), [20, 27])
+        // At 15, ARB 7% goes to 14; at 14, ARB is Rp1, going to 13
+        XCTAssertEqual(at15.arb.map(\.price), [14, 13])
+
+        let at100 = sut.calculateAutoRejects(price: 100, type: .idx, limit: 1)
+        XCTAssertEqual(at100, AutoRejects(
+            ara: [AutoReject(price: 135, priceChange: 35, percentage: 35, totalPercentage: 35)],
+            arb: [AutoReject(price: 93, priceChange: -7, percentage: -7, totalPercentage: -7)]
+        ))
+
+        let at200 = sut.calculateAutoRejects(price: 200, type: .idx, limit: 1)
+        XCTAssertEqual(at200, AutoRejects(
+            ara: [AutoReject(price: 270, priceChange: 70, percentage: 35, totalPercentage: 35)],
+            arb: [AutoReject(price: 186, priceChange: -14, percentage: -7, totalPercentage: -7)]
+        ))
+    }
+
+    func test_calculateAutoRejects_idx_bandAbove200_to_5000() throws {
+        // Price di atas Rp200–Rp5.000: Batas ARA 25% dan ARB 7%
+        let at202 = sut.calculateAutoRejects(price: 202, type: .idx, limit: 1)
+        XCTAssertEqual(at202, AutoRejects(
+            ara: [AutoReject(price: 252, priceChange: 50, percentage: 24.75, totalPercentage: 24.75)],
+            arb: [AutoReject(price: 188, priceChange: -14, percentage: -6.93, totalPercentage: -6.93)]
+        ))
+
+        let at1000 = sut.calculateAutoRejects(price: 1000, type: .idx, limit: 1)
+        XCTAssertEqual(at1000, AutoRejects(
+            ara: [AutoReject(price: 1250, priceChange: 250, percentage: 25, totalPercentage: 25)],
+            arb: [AutoReject(price: 930, priceChange: -70, percentage: -7, totalPercentage: -7)]
+        ))
+
+        let at5000 = sut.calculateAutoRejects(price: 5000, type: .idx, limit: 1)
+        XCTAssertEqual(at5000, AutoRejects(
+            ara: [AutoReject(price: 6250, priceChange: 1250, percentage: 25, totalPercentage: 25)],
+            arb: [AutoReject(price: 4650, priceChange: -350, percentage: -7, totalPercentage: -7)]
+        ))
+    }
+
+    func test_calculateAutoRejects_idx_bandAbove5000() throws {
+        // Price di atas Rp5.000: Batas ARA 20% dan ARB 7%
+        let at5025 = sut.calculateAutoRejects(price: 5025, type: .idx, limit: 1)
+        XCTAssertEqual(at5025, AutoRejects(
+            ara: [AutoReject(price: 6025, priceChange: 1000, percentage: 19.9, totalPercentage: 19.9)],
+            arb: [AutoReject(price: 4680, priceChange: -345, percentage: -6.87, totalPercentage: -6.87)]
+        ))
+
+        let at10000 = sut.calculateAutoRejects(price: 10000, type: .idx, limit: 1)
+        XCTAssertEqual(at10000, AutoRejects(
+            ara: [AutoReject(price: 12000, priceChange: 2000, percentage: 20, totalPercentage: 20)],
+            arb: [AutoReject(price: 9300, priceChange: -700, percentage: -7, totalPercentage: -7)]
+        ))
     }
 }
 

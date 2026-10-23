@@ -9,26 +9,45 @@ import Foundation
 
 public extension AutoRejectType {
     func getPercentage(price: Double) -> (ara: Double, arb: Double) {
-        var limit: Double
-        
-        switch price {
-        case 1..<200:
-            limit = 35
-            break
-        case 200..<5000:
-            limit = 25
-            break
-        default:
-            limit = 20
-        }
-        
         switch self {
         case .symmetric:
+            var limit: Double
+            switch price {
+            case 1..<200:
+                limit = 35
+                break
+            case 200..<5000:
+                limit = 25
+                break
+            default:
+                limit = 20
+            }
             return (ara: limit, arb: -limit)
         case .asymmetric:
+            var limit: Double
+            switch price {
+            case 1..<200:
+                limit = 35
+                break
+            case 200..<5000:
+                limit = 25
+                break
+            default:
+                limit = 20
+            }
             return (ara: limit, arb: -15)
         case .acceleration:
             return (ara: 10, arb: -10)
+        case .idx:
+            let araLimit: Double
+            if price <= 200 {
+                araLimit = 35
+            } else if price <= 5000 {
+                araLimit = 25
+            } else {
+                araLimit = 20
+            }
+            return (ara: araLimit, arb: -7)
         }
     }
     
@@ -40,6 +59,8 @@ public extension AutoRejectType {
             return 1
         case .acceleration:
             return 0
+        case .idx:
+            return 1
         }
     }
 }

@@ -31,6 +31,25 @@ AutoRejects(
 )
 ```
 
+## IDX Rules
+
+Use `.idx` to calculate Auto Rejections under Indonesia Stock Exchange (IDX) regulations:
+- Harga saham Rp1–10: Batas ARA dan ARB Rp1
+- Harga saham Rp11–14: Batas ARA 35% dan ARB Rp1
+- Harga saham Rp15–Rp200: Batas ARA 35% dan ARB 7%
+- Harga saham di atas Rp200–Rp5.000: Batas ARA 25% dan ARB 7%
+- Harga saham di atas Rp5.000: Batas ARA 20% dan ARB 7%
+
+```swift
+let autoRejects = stockCalculator.calculateAutoRejects(
+    price: 11,
+    type: .idx,
+    limit: 2
+)
+// ARA: 14 (35%), 18 (35%)
+// ARB: 10 (Rp1), 9 (Rp1)
+```
+
 ## Custom percentages
 
 Set either or both percentages to override the selected type. Enter positive

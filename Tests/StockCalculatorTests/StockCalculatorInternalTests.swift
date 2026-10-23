@@ -128,6 +128,7 @@ final class StockCalculatorInternalTests: XCTestCase {
         XCTAssertEqual(AutoRejectType.symmetric.arbPrice, 1)
         XCTAssertEqual(AutoRejectType.asymmetric.arbPrice, 1)
         XCTAssertEqual(AutoRejectType.acceleration.arbPrice, 0)
+        XCTAssertEqual(AutoRejectType.idx.arbPrice, 1)
     }
     
     func test_autoRejectType_getPercentage() throws {
@@ -150,6 +151,16 @@ final class StockCalculatorInternalTests: XCTestCase {
         // Acceleration
         XCTAssertEqual(AutoRejectType.acceleration.getPercentage(price: 1).ara, 10)
         XCTAssertEqual(AutoRejectType.acceleration.getPercentage(price: 1).arb, -10)
+
+        // IDX
+        XCTAssertEqual(AutoRejectType.idx.getPercentage(price: 1).ara, 35)
+        XCTAssertEqual(AutoRejectType.idx.getPercentage(price: 1).arb, -7)
+        XCTAssertEqual(AutoRejectType.idx.getPercentage(price: 10).ara, 35)
+        XCTAssertEqual(AutoRejectType.idx.getPercentage(price: 14).ara, 35)
+        XCTAssertEqual(AutoRejectType.idx.getPercentage(price: 200).ara, 35)
+        XCTAssertEqual(AutoRejectType.idx.getPercentage(price: 201).ara, 25)
+        XCTAssertEqual(AutoRejectType.idx.getPercentage(price: 5000).ara, 25)
+        XCTAssertEqual(AutoRejectType.idx.getPercentage(price: 5001).ara, 20)
     }
 }
 

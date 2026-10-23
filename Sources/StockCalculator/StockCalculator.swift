@@ -86,7 +86,15 @@ public class StockCalculator {
         for _ in 0..<limit {
             let lastPrice = ara.last?.price ?? price
 
-            let newPrice = self.getTickerByPercentage(lastPrice, percentage: araPercentage ?? type.getPercentage(price: lastPrice).ara)
+            let newPrice: Double
+            if let araPercentage = araPercentage {
+                newPrice = self.getTickerByPercentage(lastPrice, percentage: araPercentage)
+            } else if type == .idx && lastPrice <= 10 {
+                newPrice = lastPrice + 1
+            } else {
+                let percentage = type.getPercentage(price: lastPrice).ara
+                newPrice = self.getTickerByPercentage(lastPrice, percentage: percentage)
+            }
             let percentage = self.calculatePercentage(newPrice - lastPrice, lastPrice)
 
             ara.append(
@@ -104,7 +112,15 @@ public class StockCalculator {
         for _ in 0..<limit {
             let lastPrice = arb.last?.price ?? price
 
-            let newPrice = self.getTickerByPercentage(lastPrice, percentage: arbPercentage.map { -$0 } ?? type.getPercentage(price: lastPrice).arb)
+            let newPrice: Double
+            if let arbPercentage = arbPercentage {
+                newPrice = self.getTickerByPercentage(lastPrice, percentage: -arbPercentage)
+            } else if type == .idx && lastPrice <= 14 {
+                newPrice = max(lastPrice - 1, type.arbPrice)
+            } else {
+                let percentage = type.getPercentage(price: lastPrice).arb
+                newPrice = self.getTickerByPercentage(lastPrice, percentage: percentage)
+            }
             let percentage = self.calculatePercentage(newPrice - lastPrice, lastPrice)
 
             arb.append(
