@@ -515,7 +515,7 @@ final class StockCalculatorTests: XCTestCase {
     }
 
     func test_calculateAutoRejects_customPercentageBoundsAndFloor() {
-        for type: AutoRejectType in [.symmetric, .asymmetric, .acceleration, .idx] {
+        for type: AutoRejectType in [.idx, .symmetric, .asymmetric, .acceleration] {
             let result = sut.calculateAutoRejects(
                 price: 100, type: type, limit: 2,
                 araPercentage: 100, arbPercentage: 100
@@ -565,8 +565,9 @@ final class StockCalculatorTests: XCTestCase {
         XCTAssertEqual(at10.arb.map(\.price), [9, 8])
     }
 
-    func test_calculateAutoRejects_idx_band11_to_14() throws {
-        // Price Rp11–14: Batas ARA 35% dan ARB Rp1
+    func test_calculateAutoRejects_idx_band11_to_200() throws {
+        // Price Rp11–Rp200: Batas ARA 35% dan ARB max(7% or rp -1)
+        // For prices where 7% drop < Rp1 (11..14), ARB drops by Rp1
         let actual = sut.calculateAutoRejects(
             price: 11,
             type: .idx,
@@ -584,6 +585,14 @@ final class StockCalculatorTests: XCTestCase {
         )
         XCTAssertEqual(actual, expected)
 
+        let at12 = sut.calculateAutoRejects(price: 12, type: .idx, limit: 1)
+        XCTAssertEqual(at12.ara.map(\.price), [16])
+        XCTAssertEqual(at12.arb.map(\.price), [11])
+
+        let at13 = sut.calculateAutoRejects(price: 13, type: .idx, limit: 1)
+        XCTAssertEqual(at13.ara.map(\.price), [17])
+        XCTAssertEqual(at13.arb.map(\.price), [12])
+
         let at14 = sut.calculateAutoRejects(price: 14, type: .idx, limit: 1)
         XCTAssertEqual(at14.ara, [
             AutoReject(price: 18, priceChange: 4, percentage: 28.57, totalPercentage: 28.57)
@@ -591,13 +600,11 @@ final class StockCalculatorTests: XCTestCase {
         XCTAssertEqual(at14.arb, [
             AutoReject(price: 13, priceChange: -1, percentage: -7.14, totalPercentage: -7.14)
         ])
-    }
 
-    func test_calculateAutoRejects_idx_band15_to_200() throws {
-        // Price Rp15–Rp200: Batas ARA 35% dan ARB 7%
+        // For prices where 7% drop >= Rp1 (15..200), ARB drops by 7%
         let at15 = sut.calculateAutoRejects(price: 15, type: .idx, limit: 2)
         XCTAssertEqual(at15.ara.map(\.price), [20, 27])
-        // At 15, ARB 7% goes to 14; at 14, ARB is Rp1, going to 13
+        // At 15, ARB 7% goes to 14; at 14, ARB is max(7% or rp -1) which drops Rp1 to 13
         XCTAssertEqual(at15.arb.map(\.price), [14, 13])
 
         let at100 = sut.calculateAutoRejects(price: 100, type: .idx, limit: 1)

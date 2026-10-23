@@ -8,6 +8,6 @@
 import Foundation
 
 public enum AutoRejectType {
-    case symmetric, asymmetric, acceleration, idx
+    case idx, symmetric, asymmetric, acceleration
 }
 

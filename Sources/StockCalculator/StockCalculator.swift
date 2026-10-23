@@ -115,8 +115,13 @@ public class StockCalculator {
             let newPrice: Double
             if let arbPercentage = arbPercentage {
                 newPrice = self.getTickerByPercentage(lastPrice, percentage: -arbPercentage)
-            } else if type == .idx && lastPrice <= 14 {
+            } else if type == .idx && lastPrice <= 10 {
                 newPrice = max(lastPrice - 1, type.arbPrice)
+            } else if type == .idx && lastPrice <= 200 {
+                let percentage = type.getPercentage(price: lastPrice).arb
+                let percentagePrice = self.getTickerByPercentage(lastPrice, percentage: percentage)
+                let minusOnePrice = max(lastPrice - 1, type.arbPrice)
+                newPrice = min(percentagePrice, minusOnePrice)
             } else {
                 let percentage = type.getPercentage(price: lastPrice).arb
                 newPrice = self.getTickerByPercentage(lastPrice, percentage: percentage)

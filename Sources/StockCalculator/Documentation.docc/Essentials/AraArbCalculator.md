@@ -35,8 +35,7 @@ AutoRejects(
 
 Use `.idx` to calculate Auto Rejections under Indonesia Stock Exchange (IDX) regulations:
 - Harga saham Rp1–10: Batas ARA dan ARB Rp1
-- Harga saham Rp11–14: Batas ARA 35% dan ARB Rp1
-- Harga saham Rp15–Rp200: Batas ARA 35% dan ARB 7%
+- Harga saham Rp11–Rp200: Batas ARA 35% dan ARB max(7% or rp -1)
 - Harga saham di atas Rp200–Rp5.000: Batas ARA 25% dan ARB 7%
 - Harga saham di atas Rp5.000: Batas ARA 20% dan ARB 7%
 
